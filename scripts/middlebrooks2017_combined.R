@@ -12,7 +12,7 @@ dat1 <- dat
 dat1$exp <- 1
 
 # exp 2
-dat <- read.csv('data/Middlebrooks2017.csv')
+dat <- read.csv('data/Middlebrooks2017_exp2.csv')
 names(dat) <- tolower(names(dat))
 dat <- select(dat, exp_username, exp_trial, exp_condition.description, exp_serial_position, exp_serial_answer, exp_serial_value, exp_serial_strictacc)
 names(dat) <- c('subject','trial','condition','sp','stim','value','acc')

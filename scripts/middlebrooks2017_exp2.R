@@ -2,7 +2,7 @@ library(tidyverse)
 library(lme4)
 source('scripts/prior_item.R')
 
-dat <- read.csv('data/Middlebrooks2017.csv')
+dat <- read.csv('data/Middlebrooks2017_exp2.csv')
 names(dat) <- tolower(names(dat))
 dat <- select(dat, exp_username, exp_trial, exp_condition.description, exp_serial_position, exp_serial_answer, exp_serial_value, exp_serial_output_order, exp_serial_strictacc)
 names(dat) <- c('subject','trial','condition','sp','stim','value','op','acc')
@@ -50,7 +50,6 @@ subj <- arrange(subj, slopes) %>% mutate(subject = as.integer(as.character(subje
 
 # effect of prioritem value excluding bad subjects
 dat <- dat %>% 
-  select(-slopes) %>% 
   filter(!is.na(value_prioritem)) %>% 
   left_join(subj, by='subject') %>%
   mutate(group = ifelse(slopes < 0.190676, 'low','high')) 
