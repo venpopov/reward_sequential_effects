@@ -1,4 +1,5 @@
-Contains preliminary data and analysis scripts I performed in 2019, looking at possible sequential effects of value-driven learning.
+Contains preliminary data and analysis scripts I performed in 2019, looking at possible sequential 
+effects of value-driven learning. The goal is to snapshot the state of the project as I left it in 2019. 
 
 The data comes from https://journals.sagepub.com/doi/10.1177/0956797617702502 and was shared with me by Alan Castel on August 9, 2019. As far as I can tell the xlsx files are intact from what I received.
 
