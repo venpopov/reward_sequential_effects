@@ -1,0 +1,96 @@
+---
+title: "Reanalysis (2024)"
+format: html
+---
+
+The analyses reported in the scripts were run in 2019, and I don't like the fact that I fit estimated the slopes for the reward effect and the sequential reward effect separately, and then 
+estimated the correlation between them. A better modern approach is to fit the model via `brms` in 
+a bayesian framework and get a direct posterior estimate of the correlation in one step. Here I will do just that.
+
+```{r}
+#| label: setup
+#| message: false
+library(brms)
+library(tidyverse)
+library(rstan)
+data <- read.csv("output/middlebrooks2017_combined_preprocessed.csv")
+```
+
+
+Rescale and center the predictors:
+
+```{r}
+#| label: rescale
+data <- data  |> 
+  mutate(zvalue = scale(value),
+         zvalue_prioritem = scale(value_prioritem))
+```
+
+
+Fit a bayesian model to the data:
+
+```{r}
+#| label: fit1
+fit <- brm(
+  formula = acc ~ zvalue + zvalue_prioritem + (zvalue + zvalue_prioritem | subject),
+  data = data,
+  prior = set_prior("normal(0, 5)", class = "b"),
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  control = list(adapt_delta = 0.9),
+  backend = "cmdstanr",
+  file = "output/model1"
+)
+```
+
+Unlike the previous stepwise approach, we see that the correlation estimate is quite noisy, so we cannot conclude that the two effects are anti-correlated. Nevertheless, there is a main effect of both effects.
+
+```{r}
+#| label: summary1
+summary(fit)
+plot(fit, ask = FALSE)
+```
+
+Does it differ by experiment? 
+
+```{r}
+#| label: fit2
+fit_e2 <- brm(
+  formula = acc ~ zvalue + zvalue_prioritem + (zvalue + zvalue_prioritem | subject),
+  data = filter(data, exp == 2),
+  prior = set_prior("normal(0, 5)", class = "b"),
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  control = list(adapt_delta = 0.9),
+  backend = "cmdstanr",
+  file = "output/model1_exp2"
+)
+
+fit_e1 <- brm(
+  formula = acc ~ zvalue + zvalue_prioritem + (zvalue + zvalue_prioritem | subject),
+  data = filter(data, exp == 1),
+  prior = set_prior("normal(0, 5)", class = "b"),
+  family = bernoulli(),
+  chains = 4,
+  cores = 4,
+  control = list(adapt_delta = 0.9),
+  backend = "cmdstanr",
+  file = "output/model1_exp1"
+)
+```
+
+Fairly consistent across experiments:
+
+```{r}
+#| label: summary2
+summary(fit_e1)
+summary(fit_e2)
+```
+
+```{r}
+#| label: plot2
+plot(fit_e1, ask = FALSE)
+plot(fit_e2, ask = FALSE)
+```
